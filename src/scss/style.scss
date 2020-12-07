@@ -1,0 +1,37 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper{
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.minefield{
+    width: auto;
+    display: grid;
+    border: 1px solid red;
+    
+    .field{
+        background-color: yellow;
+        text-align: center;
+        border: 1px solid grey;
+        color: green;
+        
+    }
+    .hide{
+        background-color: whitesmoke;
+    }    
+    .mine{
+        background-color: red;
+    }
+    
+    .pink{
+        border: 2px cyan solid;
+
+    }
+}
