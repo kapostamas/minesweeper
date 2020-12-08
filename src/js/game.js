@@ -1,29 +1,29 @@
-let numberOfSides;
+let fieldSides;
 let numberOfMines;
 
 window.addEventListener('DOMContentLoaded', ()=> {
-    numberOfSides=4
-    numberOfMines=(numberOfSides**2/5).toFixed(0) 
+    fieldSides=4
+    numberOfMines=(fieldSides**2/5).toFixed(0) 
     generateMinefield()
     shuffle()
 });
 
 function generateMinefield(){
     const mfield=document.querySelector('.minefield')
-    mfield.style.gridTemplateRows=`repeat(${numberOfSides},20px)`
-    mfield.style.gridTemplateColumns=`repeat(${numberOfSides},20px)`    
-    for(let i=0;i<numberOfSides;i++){
-        for(let j=0;j<numberOfSides;j++){
-            let fld=document.createElement('div')
-            fld.classList.add(`f${i}-${j}`)
-            fld.classList.add('field')
-            fld.classList.add('hide')
-            fld.addEventListener('click', e=>selectField(e.target))
-            fld.addEventListener('contextmenu', e=>{
+    mfield.style.gridTemplateRows=`repeat(${fieldSides},20px)`
+    mfield.style.gridTemplateColumns=`repeat(${fieldSides},20px)`    
+    for(let i=0;i<fieldSides;i++){
+        for(let j=0;j<fieldSides;j++){
+            let cell=document.createElement('div')
+            cell.classList.add(`f${i}-${j}`)
+            cell.classList.add('field')
+            cell.classList.add('hide')
+            cell.addEventListener('click', e=>selectField(e.target))
+            cell.addEventListener('contextmenu', e=>{
                 toggleFlag(e.target)
                 e.preventDefault()
             })
-            mfield.appendChild(fld)
+            mfield.appendChild(cell)
         }
     }
 }
@@ -32,7 +32,7 @@ function shuffle(){
     let i=0
     console.log(numberOfMines)
     while (i < numberOfMines) {        
-        let pos=`f${getRandomInt(0,numberOfSides)}-${getRandomInt(0,numberOfSides)}`
+        let pos=`f${getRandomInt(0,fieldSides)}-${getRandomInt(0,fieldSides)}`
         let ff=document.querySelector(`.${pos}`)
         if(!ff.classList.contains('mine')){
             ff.classList.add('mine')
@@ -50,7 +50,7 @@ function getRandomInt(min, max) {
 function selectField(f){
     if(f.classList.contains('mine')) stepOnMine(f)
     else{
-        f.classList.remove('blue')
+        f.classList.remove('flag')
         checkNeighbors(f)
     }
     checkWin()
@@ -58,26 +58,26 @@ function selectField(f){
 
 function toggleFlag(f){
     if(f.classList.contains('hide'))
-        f.classList.toggle('blue')
+        f.classList.toggle('flag')
 }
 
 function stepOnMine(f){
     let fields=document.querySelectorAll('.field')
     for(f of fields){
-        f.classList.remove('hide','blue')
+        f.classList.remove('hide','flag')
     }
     console.log('You have lost...')
 }
 
 function checkWin(){
     let countHide=document.querySelectorAll('.hide')
-    let countBlue=document.querySelectorAll('.blue')
-    if(countHide.length==numberOfMines && countBlue.length==numberOfMines)
+    let countFlag=document.querySelectorAll('.flag')
+    if(countHide.length==numberOfMines && countFlag.length==numberOfMines)
         console.log("You have won!")
 }
 
 function checkNeighbors(f){
-    if(!f.classList.contains('hide') || f.classList.contains('blue')) return false
+    if(!f.classList.contains('hide') || f.classList.contains('flag')) return false
     let cor=coordFromClasslist(f)
     const ar=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]
     let mine=0
@@ -85,7 +85,7 @@ function checkNeighbors(f){
     ar.map(d=>{
         let x=cor[0]+d[0]
         let y=cor[1]+d[1]
-        if((x>=0 && x<numberOfSides) && (y>=0 && y<numberOfSides)){
+        if((x>=0 && x<fieldSides) && (y>=0 && y<fieldSides)){
             let sfield=document.querySelector(`.f${x}-${y}`)
             if(sfield.classList.contains('mine')) mine++
             else res.push(sfield)
@@ -93,7 +93,7 @@ function checkNeighbors(f){
     })
     f.classList.remove('hide')
     if(mine>0) f.textContent=mine
-    else if(res.length>0) res.map(d=> checkNeighbors(d))
+    else if(res.length>0) res.map(checkNeighbors)
 }
 
 function coordFromClasslist(f){
