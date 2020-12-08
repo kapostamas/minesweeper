@@ -11,13 +11,6 @@
     align-items: center;
 }
 
-.minefield .mine:not(.hide)::after {
-    font-family: "Font Awesome 5 Free";
-    color: #000;
-    font-weight: 900;
-    content: "\f1e2";
-}
-
 .minefield{
     width: auto;
     display: grid;
@@ -37,8 +30,13 @@
         
     }
     .mine{
-        
         background-color:#f84361;
+        &:not(.hidden)::after {
+            font-family: "Font Awesome 5 Free";
+            color: #000;
+            font-weight: 900;
+            content: "\f1e2";
+        }
     }
     .hidden{
         background-color: whitesmoke;

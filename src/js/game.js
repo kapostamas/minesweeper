@@ -87,7 +87,7 @@ function toggleFlag(f){
 function stepOnMine(f){
     let cells=document.querySelectorAll('.field')
     for(f of cells){
-        f.classList.remove('hide','flag')
+        f.classList.remove('hidden','flag')
     }
     console.log('You have lost...')
 }
