@@ -54,9 +54,9 @@ function selectField(f){
         f.classList.contains('mine') ? console.log('Bumm!') : findNeighbors(f)
 }
 
-let b=0;
 
 function findNeighbors(f){
+    let b=0;
     let cor=coordFromClasslist(f)
     const ar=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]]
     let mine=0
@@ -67,9 +67,11 @@ function findNeighbors(f){
         let y=cor.y+d[1]
         if((x>=0 && x<20) && (y>=0 && y<20) && f.classList.contains('hide')){
             sfield=document.querySelector(`.f${x}-${y}`)
+            console.log(`.f${x}-${y}`)
             if(sfield.classList.contains('mine')){
                 mine++
             }else{ 
+                if(!res.includes(sfield))
                 sfield.textContent=b++
                 res.push(sfield)
             }
@@ -80,10 +82,11 @@ function findNeighbors(f){
     if(mine>0){
         f.textContent=mine
     }else{
-        res.map(d=>{
+        findNeighbors(sfield)
+        /*res.map(d=>{
             findNeighbors(d)
             //d.classList.remove('hide')
-        })
+        })*/
     }
 
 }
