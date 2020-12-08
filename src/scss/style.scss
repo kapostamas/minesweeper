@@ -11,26 +11,46 @@
     align-items: center;
 }
 
+.minefield .mine:not(.hide)::after {
+    font-family: "Font Awesome 5 Free";
+    color: #000;
+    font-weight: 900;
+    content: "\f1e2";
+}
+
 .minefield{
     width: auto;
     display: grid;
-    border: 1px solid red;
+    border: 1px solid #eee;
     
     .field{
-        background-color: yellow;
+        background-color: whitesmoke;
         text-align: center;
-        border: 1px solid grey;
+        border: 1px solid #ccc;
+        padding: 9px 5px 5px;
         color: green;
+        text-align: center;
         font-weight: 400;
+        transition-property: background-color, box-shadow;
+        transition-duration: 1s;
+        transition-timing-function: ease-out;
         
     }
     .mine{
-        background-color: red;
+        
+        background-color:#f84361;
     }
     .hide{
         background-color: whitesmoke;
+        box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #777;
     }
     .flag{
-        background-color: #8000ff;
+
+        &::after {
+            font-family: "Font Awesome 5 Free";
+            color: #000;
+            font-weight: 900;
+            content: "\f024";
+        }
     }
 }

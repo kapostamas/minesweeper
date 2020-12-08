@@ -10,8 +10,8 @@ window.addEventListener('DOMContentLoaded', ()=> {
 
 function generateMinefield(){
     const mfield=document.querySelector('.minefield')
-    mfield.style.gridTemplateRows=`repeat(${fieldSides},20px)`
-    mfield.style.gridTemplateColumns=`repeat(${fieldSides},20px)`    
+    mfield.style.gridTemplateRows=`repeat(${fieldSides},40px)`
+    mfield.style.gridTemplateColumns=`repeat(${fieldSides},40px)`    
     for(let i=0;i<fieldSides;i++){
         for(let j=0;j<fieldSides;j++){
             let cell=document.createElement('div')
