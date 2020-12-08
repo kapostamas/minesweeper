@@ -16,7 +16,7 @@
     display: grid;
     border: 1px solid red;
     
-    .field{
+    .cell{
         background-color: yellow;
         text-align: center;
         border: 1px solid grey;
@@ -27,10 +27,10 @@
     .mine{
         background-color: red;
     }
-    .hide{
+    .hidden{
         background-color: whitesmoke;
     }
-    .blue{
+    .flag{
         background-color: #8000ff;
     }
 }

@@ -1,0 +1,39 @@
+Játékmező inicializációja:
+	játékmező = tömb[][] // mező objektumokból
+	aknák letétele:
+	amíg (aknákSzáma < maxAknák)
+		x, y = random, random // Math.floor(Math.random() * 10) + 1
+		ha (nem játékmező[x][y].aknaE())
+			játékmező[x][y].legyenAkna()
+			aknákSzáma++
+	(x, y = 0, 0; x, y ≤ szél, mag)-szor
+		mezőDiv = elemKészítése("div")
+		mezőDiv.x = x
+		mezőDiv.y = y
+		mezőDiv.addEventListener("click", felfedőFüggvény())
+		mezőDiv.addEventListener("rightClick", zászlózóFüggvény())
+		játékmező[x][y].divElem = mezőDiv
+
+
+
+mező objektum:
+{
+	állapot
+	divElem
+	
+	függvények…
+}
+
+felfedőFüggvény(x, y):
+	//vizsgálat, hogy aknát fedtünk-e fel...
+	
+	vizsgálat = [ (x-1 y-1), (x y-1), (x+ y-1), ... ]
+	mindenre (vX, vY a vizsgálatban)
+		ha játékmező[vX][vY].aknaE()
+			aknákKörülöttem ++
+		ha aknákKörülöttem > 0
+			számKijelzése //tömbben, vizuálisan
+		egyébként
+			mindenre (vX, vY a vizsgálatban)
+				felfedőFüggvény(vX, vY)
+

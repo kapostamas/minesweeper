@@ -1,0 +1,22 @@
+Aknakereső
+	játékmező generálása (alap: 10×10 – később variálható?)
+		grid, div-ek
+		egy mező:
+			felfedetlen
+			felfedetlen zászlóval
+			felfedett, szám (0–8)
+			felfedett, akna
+		aknák elhelyezése
+		számok kiszámolása előre
+		eventListenerek
+	játék közben
+		felfedés
+			akna → játék vége
+			üres → szomszédok felfedése
+			szám → csak felfedés
+		zászlórakás
+		nyerés vizsgálata (#felfedetlenek = #aknák)
+		időszámláló
+		
+	legjobb eredmények tárolása?
+		nevek tárolása
