@@ -20,7 +20,7 @@ function generateMinefield(){
             fld.classList.add('hide')
             fld.addEventListener('click', e=>selectField(e.target))
             fld.addEventListener('contextmenu', e=>{
-                e.target.classList.toggle('blue')
+                toggleFlag(e.target)
                 e.preventDefault()
             })
             mfield.appendChild(fld)
@@ -56,19 +56,24 @@ function selectField(f){
     checkWin()
 }
 
+function toggleFlag(f){
+    if(f.classList.contains('hide'))
+        f.classList.toggle('blue')
+}
+
 function stepOnMine(f){
     let fields=document.querySelectorAll('.field')
     for(f of fields){
         f.classList.remove('hide','blue')
     }
-    alert('Allah akbar!')
+    console.log('You have lost...')
 }
 
 function checkWin(){
     let countHide=document.querySelectorAll('.hide')
     let countBlue=document.querySelectorAll('.blue')
     if(countHide.length==numberOfMines && countBlue.length==numberOfMines)
-        alert("You have won!")
+        console.log("You have won!")
 }
 
 function checkNeighbors(f){
