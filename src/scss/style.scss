@@ -114,7 +114,7 @@
     }
     .mine{
         background-color:#f84361;
-        &:not(.hidden)::after {
+        &::after {
             font-family: "Font Awesome 5 Free";
             color: #000;
             font-weight: 900;
@@ -137,5 +137,9 @@
             font-weight: 900;
             content: "\f024";
         }
+    }
+    &.game-over .flag:not(.mine)::after {
+        opacity: 1;
+        color: red;
     }
 }
