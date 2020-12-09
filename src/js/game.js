@@ -1,23 +1,40 @@
-let fieldSize;
-let numberOfMines;
+const fieldSettingsList = [
+    {
+        height: 10,
+        width: 10,
+        mines: 20
+    },
+    {
+        height: 16,
+        width: 16,
+        mines: 40
+    },
+    {
+        height: 16,
+        width: 30,
+        mines: 99
+    }
+];
+let fieldSettings;
 let allCells;
 let numberOfHiddenCells;
+let numberOfFlags;
 
 window.addEventListener('DOMContentLoaded', ()=> {
-    fieldSize=10
-    numberOfMines=(fieldSize**2/5).toFixed(0)
-    numberOfHiddenCells=fieldSize**2
-    allCells=fieldSize**2
-    generateMinefield()
-   // shuffle()
+    fieldSettings = fieldSettingsList[0];
+    allCells = fieldSettings.height * fieldSettings.width;
+    numberOfHiddenCells = allCells;
+    numberOfFlags = fieldSettings.mines;
+    updateFlagCounter();
+    generateMinefield();
 });
 
 function generateMinefield(){
     const mfield=document.querySelector('.minefield')
-    mfield.style.gridTemplateRows=`repeat(${fieldSize},30px)`
-    mfield.style.gridTemplateColumns=`repeat(${fieldSize},30px)`    
-    for (let i=0;i<fieldSize;i++){
-        for (let j=0;j<fieldSize;j++){
+    mfield.style.gridTemplateRows=`repeat(${fieldSettings.height},40px)`
+    mfield.style.gridTemplateColumns=`repeat(${fieldSettings.width},40px)`    
+    for (let i = 0; i < fieldSettings.height; i++) {
+        for (let j=0; j < fieldSettings.width; j++) {
             let cell=document.createElement('div')
             /*cell = {
                 cellDiv: cellDiv,
@@ -28,7 +45,7 @@ function generateMinefield(){
             cell.classList.add(`f${i}-${j}`)
             cell.classList.add('cell')
             cell.classList.add('hidden')
-            cell.addEventListener('click', e=>selectField(e.target))
+            cell.addEventListener('click', e=>selectCell(e.target))
             cell.addEventListener('contextmenu', e=>{
                 toggleFlag(e.target)
                 e.preventDefault()
@@ -40,11 +57,10 @@ function generateMinefield(){
 
 function shuffle(exclX, exclY){
     let i=0
-    console.log(numberOfMines)
-    while (i < numberOfMines) {  
-        let posX = getRandomInt(0,fieldSize)
-        let posY = getRandomInt(0,fieldSize)
-        let pos=`f${posX}-${posY}`
+    while (i < fieldSettings.mines) {  
+        let posX = getRandomInt(0,fieldSettings.width)
+        let posY = getRandomInt(0,fieldSettings.height)
+        let pos=`f${posY}-${posX}`
         let ff=document.querySelector(`.${pos}`)
         if (!ff.classList.contains('mine') && ((Math.abs(posX - exclX) > 1) || (Math.abs(posY - exclY) > 1))) {
             ff.classList.add('mine')
@@ -59,7 +75,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-function selectField(f){
+function selectCell(f) {
     if (numberOfHiddenCells == allCells) {
         beginGame(f);
     }
@@ -80,12 +96,21 @@ function beginGame(f) {
 }
 
 function toggleFlag(f){
-    if(f.classList.contains('hidden'))
-        f.classList.toggle('flag')
+    if(f.classList.contains('hidden')) {
+        if (!f.classList.contains('flag')) {
+            --numberOfFlags;
+            f.classList.add('flag');
+        }
+        else {
+            ++numberOfFlags;
+            f.classList.remove('flag');
+        }
+    }
+    updateFlagCounter();
 }
 
 function stepOnMine(f){
-    let cells=document.querySelectorAll('.field')
+    let cells=document.querySelectorAll('.cell')
     for(f of cells){
         f.classList.remove('hidden','flag')
     }
@@ -93,7 +118,7 @@ function stepOnMine(f){
 }
 
 function checkWin(){
-    if (numberOfHiddenCells == numberOfMines) {
+    if (numberOfHiddenCells == fieldSettings.mines) {
         console.log("You have won!")
         let hiddenCells = document.getElementsByClassName('hidden');
         for (cell of hiddenCells) {
@@ -113,8 +138,8 @@ function checkNeighbors(f){
     neighbors.forEach(d => {
         let x=cor[0]+d[0]
         let y=cor[1]+d[1]
-        if((x>=0 && x<fieldSize) && (y>=0 && y<fieldSize)){
-            let selectedCell=document.querySelector(`.f${x}-${y}`)
+        if ((x >= 0 && x < fieldSettings.width) && (y >= 0 && y < fieldSettings.height)) {
+            let selectedCell=document.querySelector(`.f${y}-${x}`)
             if(selectedCell.classList.contains('mine'))
                 ++surroundingMines
             else
@@ -124,7 +149,7 @@ function checkNeighbors(f){
     f.classList.remove('hidden')
     --numberOfHiddenCells
     if(surroundingMines>0)
-        f.textContent=surroundingMines
+        f.setAttribute("mines", surroundingMines);
     else if(res.length>0)
         res.forEach(checkNeighbors)
 }
@@ -132,8 +157,12 @@ function checkNeighbors(f){
 function coordFromClasslist(f){
     let coord=[]
     let cor=f.classList[0].match(/(\d+)-(\d+)/);
-    coord.push(parseInt(cor[1]))
     coord.push(parseInt(cor[2]))
+    coord.push(parseInt(cor[1]))
     return coord
 }
 
+function updateFlagCounter() {
+    let counter = document.getElementById("counter");
+    counter.innerText = numberOfFlags;
+}

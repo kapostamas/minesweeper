@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+
 *{
     box-sizing: border-box;
     margin: 0;
@@ -9,25 +12,105 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+}
+
+#controls {
+    background-color: #dedede;
+    padding: 10px;
+    display: flex;
+    width: 1200px;
+    height: 60px;
+    justify-content: space-between;
+
+    font-family: "Quicksand";
+    &>div {
+        display: flex;
+        gap: 10px;
+    }
+    #difficulty, #restart {
+        background-color: whitesmoke;
+        border: 1px solid gray;
+        width: 120px;
+        box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #777;
+        border-radius: 3px;
+        font-family: "Quicksand";
+        text-align: center;
+    }
+    .display {
+        background-color: white;
+        width: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #timer::before {
+        font-family: "Font Awesome 5 Free";
+        content: "\f2f2";
+        font-weight: 900;
+        margin-right: 10px;
+        opacity: 0.5;
+    }
+    #counter::before {
+        font-family: "Font Awesome 5 Free";
+        content: "\f024";
+        font-weight: 900;
+        margin-right: 10px;
+        opacity: 0.5;
+    }
 }
 
 .minefield{
     width: auto;
     display: grid;
     border: 1px solid #eee;
+    font-family: "Quicksand";
 
     .cell{
-        background-color: whitesmoke;
+        background-color: rgb(230, 230, 230);
         text-align: center;
         border: 1px solid #ccc;
-        padding: 9px 5px 5px;
-        color: green;
+        padding: 5px 5px 5px;
         text-align: center;
-        font-weight: 400;
+        font-size: 20px;
+        font-weight: 600;
         transition-property: background-color, box-shadow;
-        transition-duration: 1s;
+        transition-duration: 0.5s;
         transition-timing-function: ease-out;
-        
+        cursor: pointer;
+
+        &[mines='1']::after {
+            color: #00a2ff;
+            content: "1";
+        }
+        &[mines='2']::after {
+            color: #0a8506;
+            content: "2";
+        }
+        &[mines='3']::after {
+            color: #df0000;
+            content: "3";
+        }
+        &[mines='4']::after {
+            color: #043a9e;
+            content: "4";
+        }
+        &[mines='5']::after {
+            color: #e64900;
+            content: "5";
+        }
+        &[mines='6']::after {
+            color: #0066a1;
+            content: "6";
+        }
+        &[mines='7']::after {
+            color: #747474;
+            content: "7";
+        }
+        &[mines='8']::after {
+            color: #000000;
+            content: "8";
+        }
     }
     .mine{
         background-color:#f84361;
@@ -35,18 +118,22 @@
             font-family: "Font Awesome 5 Free";
             color: #000;
             font-weight: 900;
-            content: "\f1e2";
+            content: "\e074";
         }
     }
     .hidden{
         background-color: whitesmoke;
         box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #777;
+        &:hover {
+            transition-duration: .2s;
+            box-shadow: inset 3px 3px 10px white, inset -1px -1px 5px #777;
+        }
     }
     .flag{
-
         &::after {
             font-family: "Font Awesome 5 Free";
-            color: #000;
+            color: rgb(0, 0, 0);
+            opacity: 0.5;
             font-weight: 900;
             content: "\f024";
         }
