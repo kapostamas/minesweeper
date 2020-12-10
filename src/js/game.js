@@ -15,29 +15,44 @@ const fieldSettingsList = [
         mines: 99
     }
 ];
-let fieldSettings;
+let currentFieldSettings;
 let allCells;
 let numberOfHiddenCells;
 let numberOfFlags;
 let minefield = [];
+let timeCounter;
+let timer;
 
 window.addEventListener('DOMContentLoaded', ()=> {
-    fieldSettings = fieldSettingsList[0];
+    init(fieldSettingsList[0]);
+    document.getElementById("restart").addEventListener('click', () => {
+        settingsIndex = document.getElementById('difficulty').value;
+        init(fieldSettingsList[settingsIndex > 0 ? settingsIndex : 0]); /// TODO
+    });
+});
+
+
+function init(fieldSettings) {
+    currentFieldSettings = fieldSettings;
     allCells = fieldSettings.height * fieldSettings.width;
     numberOfHiddenCells = allCells;
     numberOfFlags = fieldSettings.mines;
     updateFlagCounter();
+    timeCounter = 0;
+    stopTimer();
+    updateTimer();
     generateMinefield();
-});
+}
 
 function generateMinefield(){
-    const minefieldContainer=document.querySelector('.minefield');
+    const minefieldContainer=document.getElementById("minefield");
     minefieldContainer.classList.remove("game-over");
-    minefieldContainer.style.gridTemplateRows=`repeat(${fieldSettings.height},40px)`
-    minefieldContainer.style.gridTemplateColumns=`repeat(${fieldSettings.width},40px)`    
-    for (let i = 0; i < fieldSettings.height; i++) {
+    clearMinefield();
+    minefieldContainer.style.gridTemplateRows=`repeat(${currentFieldSettings.height},40px)`
+    minefieldContainer.style.gridTemplateColumns=`repeat(${currentFieldSettings.width},40px)`    
+    for (let i = 0; i < currentFieldSettings.height; i++) {
         minefield.push([])
-        for (let j=0; j < fieldSettings.width; j++) {
+        for (let j=0; j < currentFieldSettings.width; j++) {
             let cellDiv = document.createElement('div');
             let cell = {
                 node: cellDiv,      // cell on playing field
@@ -59,11 +74,19 @@ function generateMinefield(){
     }
 }
 
+function clearMinefield() {
+    const minefieldContainer = document.getElementById("minefield");
+    for (let cell of minefield.flat()) {
+        minefieldContainer.removeChild(cell.node);
+    }
+    minefield = [];
+}
+
 function shuffle(exclX, exclY){
     let minesPlaced = 0;
-    while (minesPlaced < fieldSettings.mines) {  
-        let posX = getRandomInt(0,fieldSettings.width);
-        let posY = getRandomInt(0,fieldSettings.height);
+    while (minesPlaced < currentFieldSettings.mines) {  
+        let posX = getRandomInt(0,currentFieldSettings.width);
+        let posY = getRandomInt(0,currentFieldSettings.height);
         let cell = minefield[posY][posX];
         if (cell.content != 'mine' && ((Math.abs(posX - exclX) > 1) || (Math.abs(posY - exclY) > 1))) {
             // cell is unoccupied and is at least 2 cells from the starting cell
@@ -83,19 +106,35 @@ function selectCell(cell) {
     if (numberOfHiddenCells == allCells) {
         beginGame(cell);
     }
-    if (cell.state != "flagged") {
+    if (cell.state == "hidden") {
         if (cell.content == 'mine')
             stepOnMine(cell);
         else {
             checkNeighbors(cell);
         }
     }
-    checkWin()
+    else if (cell.state == "shown") {
+        nameTBD(cell);
+    }
+    checkWin();
 }
 
 function beginGame(cell) {
     shuffle(cell.col, cell.row);
-    //startTimer();
+    timeCounter = 0;
+    startTimer();
+}
+
+function startTimer() {
+    timer = window.setInterval(function() {
+        ++timeCounter;
+        updateTimer();
+    }, 1000);
+}
+
+function stopTimer() {
+    window.clearInterval(timer);
+    updateTimer();
 }
 
 function toggleFlag(cell){
@@ -115,42 +154,60 @@ function toggleFlag(cell){
 }
 
 function stepOnMine(mineCell) {
-    const minefieldContainer = document.querySelector(".minefield");
+    const minefieldContainer = document.getElementById("minefield");
     minefieldContainer.classList.add("game-over");
     for (cell of minefield.flat()) {
         if (cell.content == "mine")
             cell.node.classList.add("mine");
     }
     mineCell.node.classList.remove("hidden");
+    stopTimer();
     console.log('You have lost...')
 }
 
 function checkWin() {
-    if (numberOfHiddenCells == fieldSettings.mines) {
+    if (numberOfHiddenCells == currentFieldSettings.mines) {
         console.log("You have won!")
         for (cell of minefield.flat().filter((cell) => {return cell.state == "hidden";})) { // for all hidden (and not flagged) cells
             toggleFlag(cell);
         };
+        stopTimer();
     }    
 }
 
-
-function checkNeighbors(cell) {
-    if(cell.state != "hidden")
-        return false;
-    const neighbors = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
-    let surroundingMines = 0;
-    let res = [];
-    neighbors.forEach (direction => {
+function getNeighbors(cell) {
+    const neighborDirs = [[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+    let neighbors = [];
+    neighborDirs.forEach (direction => {
         let x = cell.col + direction[0];
         let y = cell.row + direction[1];
-        if ((x >= 0 && x < fieldSettings.width) && (y >= 0 && y < fieldSettings.height)) {
-            let selectedCell = minefield[y][x];
-            if (selectedCell.content == 'mine')
-                ++surroundingMines;
-            else
-                res.push(selectedCell);
+        if ((x >= 0 && x < currentFieldSettings.width) && (y >= 0 && y < currentFieldSettings.height)) {
+            neighbors.push(minefield[y][x]);
         }
+    });
+    return neighbors;
+}
+
+function nameTBD(cell) {
+    let neighbors = getNeighbors(cell);
+    let surroundingFlags = 0;
+    for (neighbor of neighbors) {
+        if (neighbor.state == "flagged")
+            ++surroundingFlags;
+    }
+    if (surroundingFlags == cell.content) {
+        neighbors.forEach(checkNeighbors);
+    }
+}
+
+function checkNeighbors(cell) {
+    if (cell.state != "hidden")
+        return;
+    let surroundingMines = 0;
+    let neighbors = getNeighbors(cell);
+    neighbors.forEach (neighbor => {
+        if (neighbor.content == 'mine')
+            ++surroundingMines;
     })
     cell.state = "shown";
     cell.node.classList.remove('hidden');
@@ -159,11 +216,18 @@ function checkNeighbors(cell) {
         cell.node.setAttribute("mines", surroundingMines);
         cell.content = surroundingMines;
     }
-    else if(res.length>0)
-        res.forEach(checkNeighbors);
+    else if (neighbors.length > 0)
+        neighbors.forEach(checkNeighbors);
 }
 
 function updateFlagCounter() {
     let counter = document.getElementById("counter");
     counter.innerText = numberOfFlags;
+}
+
+function updateTimer() {
+    let timeDisplay = document.getElementById("timer");
+    let minutes = `${Math.floor(timeCounter/60)}`.padStart(2, '0');
+    let seconds = `${timeCounter%60}`.padStart(2, '0');
+    timeDisplay.innerText = `${minutes}:${seconds}`;
 }
