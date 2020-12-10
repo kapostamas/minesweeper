@@ -22,6 +22,7 @@ let numberOfFlags;
 let minefield = [];
 let timeCounter;
 let timer;
+let gameOver;
 
 window.addEventListener('DOMContentLoaded', ()=> {
     init(fieldSettingsList[0]);
@@ -33,6 +34,7 @@ window.addEventListener('DOMContentLoaded', ()=> {
 
 
 function init(fieldSettings) {
+    gameOver = false;
     currentFieldSettings = fieldSettings;
     allCells = fieldSettings.height * fieldSettings.width;
     numberOfHiddenCells = allCells;
@@ -63,10 +65,14 @@ function generateMinefield(){
             }
             cellDiv.classList.add('cell');
             cellDiv.classList.add('hidden');
-            cellDiv.addEventListener('click', () => selectCell(cell))
+            cellDiv.addEventListener('click', () => {
+                if (!gameOver)
+                    selectCell(cell);
+            });
             cellDiv.addEventListener('contextmenu', (e) => {
-                toggleFlag(cell)
-                e.preventDefault()
+                if (!gameOver)
+                    toggleFlag(cell);
+                e.preventDefault();
             })
             minefieldContainer.appendChild(cellDiv);
             minefield[i].push(cell);
@@ -162,6 +168,7 @@ function stepOnMine(mineCell) {
     }
     mineCell.node.classList.remove("hidden");
     stopTimer();
+    gameOver = true;
     console.log('You have lost...')
 }
 
@@ -172,6 +179,7 @@ function checkWin() {
             toggleFlag(cell);
         };
         stopTimer();
+        gameOver = true;
     }    
 }
 
