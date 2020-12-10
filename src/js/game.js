@@ -128,9 +128,8 @@ function stepOnMine(mineCell) {
 function checkWin() {
     if (numberOfHiddenCells == fieldSettings.mines) {
         console.log("You have won!")
-        for (cell of minefield.flat().filter((cell) => {return cell.state != "shown";})) { // for all hidden or flagged cells
-            if (cell.state != 'flag')
-                toggleFlag(cell);
+        for (cell of minefield.flat().filter((cell) => {return cell.state == "hidden";})) { // for all hidden (and not flagged) cells
+            toggleFlag(cell);
         };
     }    
 }
