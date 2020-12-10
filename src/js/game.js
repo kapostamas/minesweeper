@@ -113,11 +113,7 @@ function selectCell(cell) {
         beginGame(cell);
     }
     if (cell.state == "hidden") {
-        if (cell.content == 'mine')
-            stepOnMine(cell);
-        else {
-            checkNeighbors(cell);
-        }
+        checkNeighbors(cell);
     }
     else if (cell.state == "shown") {
         nameTBD(cell);
@@ -131,40 +127,13 @@ function beginGame(cell) {
     startTimer();
 }
 
-function startTimer() {
-    timer = window.setInterval(function() {
-        ++timeCounter;
-        updateTimer();
-    }, 1000);
-}
-
-function stopTimer() {
-    window.clearInterval(timer);
-    updateTimer();
-}
-
-function toggleFlag(cell){
-    if (cell.state != "shown") {
-        if (cell.state != "flagged" && numberOfFlags > 0) {
-            --numberOfFlags;
-            cell.state = "flagged";
-            cell.node.classList.add('flag');
-        }
-        else if (cell.state == "flagged") {
-            cell.state = "hidden";
-            ++numberOfFlags;
-            cell.node.classList.remove('flag');
-        }
-    }
-    updateFlagCounter();
-}
 
 function stepOnMine(mineCell) {
     const minefieldContainer = document.getElementById("minefield");
     minefieldContainer.classList.add("game-over");
     for (cell of minefield.flat()) {
         if (cell.content == "mine")
-            cell.node.classList.add("mine");
+        cell.node.classList.add("mine");
     }
     mineCell.node.classList.remove("hidden");
     stopTimer();
@@ -201,7 +170,7 @@ function nameTBD(cell) {
     let surroundingFlags = 0;
     for (neighbor of neighbors) {
         if (neighbor.state == "flagged")
-            ++surroundingFlags;
+        ++surroundingFlags;
     }
     if (surroundingFlags == cell.content) {
         neighbors.forEach(checkNeighbors);
@@ -211,11 +180,15 @@ function nameTBD(cell) {
 function checkNeighbors(cell) {
     if (cell.state != "hidden")
         return;
+    if (cell.content == 'mine') {
+        stepOnMine(cell);
+        return;
+    }
     let surroundingMines = 0;
     let neighbors = getNeighbors(cell);
     neighbors.forEach (neighbor => {
         if (neighbor.content == 'mine')
-            ++surroundingMines;
+        ++surroundingMines;
     })
     cell.state = "shown";
     cell.node.classList.remove('hidden');
@@ -225,7 +198,35 @@ function checkNeighbors(cell) {
         cell.content = surroundingMines;
     }
     else if (neighbors.length > 0)
-        neighbors.forEach(checkNeighbors);
+    neighbors.forEach(checkNeighbors);
+}
+
+function toggleFlag(cell){
+    if (cell.state != "shown") {
+        if (cell.state != "flagged" && numberOfFlags > 0) {
+            --numberOfFlags;
+            cell.state = "flagged";
+            cell.node.classList.add('flag');
+        }
+        else if (cell.state == "flagged") {
+            cell.state = "hidden";
+            ++numberOfFlags;
+            cell.node.classList.remove('flag');
+        }
+    }
+    updateFlagCounter();
+}
+
+function startTimer() {
+    timer = window.setInterval(function() {
+        ++timeCounter;
+        updateTimer();
+    }, 1000);
+}
+
+function stopTimer() {
+    window.clearInterval(timer);
+    updateTimer();
 }
 
 function updateFlagCounter() {
