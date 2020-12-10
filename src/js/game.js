@@ -1,15 +1,18 @@
 const fieldSettingsList = [
     {
+        diffIndex: 0,
         height: 10,
         width: 10,
         mines: 20
     },
     {
+        diffIndex: 1,
         height: 16,
         width: 16,
         mines: 40
     },
     {
+        diffIndex: 2,
         height: 16,
         width: 30,
         mines: 99
@@ -18,13 +21,18 @@ const fieldSettingsList = [
 let currentFieldSettings;
 let allCells;
 let numberOfHiddenCells;
-let numberOfFlags;
 let minefield = [];
+
+let numberOfFlags;
 let timeCounter;
 let timer;
+
 let gameOver;
 
+let storage;
+
 window.addEventListener('DOMContentLoaded', ()=> {
+    storage = window.localStorage;
     init(fieldSettingsList[0]);
     document.getElementById("restart").addEventListener('click', () => {
         settingsIndex = document.getElementById('difficulty').value;
@@ -50,8 +58,8 @@ function generateMinefield(){
     const minefieldContainer=document.getElementById("minefield");
     minefieldContainer.classList.remove("game-over");
     clearMinefield();
-    minefieldContainer.style.gridTemplateRows=`repeat(${currentFieldSettings.height},40px)`
-    minefieldContainer.style.gridTemplateColumns=`repeat(${currentFieldSettings.width},40px)`    
+    minefieldContainer.style.gridTemplateRows=`repeat(${currentFieldSettings.height},35px)`
+    minefieldContainer.style.gridTemplateColumns=`repeat(${currentFieldSettings.width},35px)`    
     for (let i = 0; i < currentFieldSettings.height; i++) {
         minefield.push([])
         for (let j=0; j < currentFieldSettings.width; j++) {
@@ -149,6 +157,7 @@ function checkWin() {
         };
         stopTimer();
         gameOver = true;
+        saveHighscore({name: "unnamed", score: timeCounter, date: new Date().toISOString()});
     }    
 }
 
@@ -239,4 +248,29 @@ function updateTimer() {
     let minutes = `${Math.floor(timeCounter/60)}`.padStart(2, '0');
     let seconds = `${timeCounter%60}`.padStart(2, '0');
     timeDisplay.innerText = `${minutes}:${seconds}`;
+}
+
+function saveHighscore(scoreObj) {
+    let scores = getAllHighscores();
+    let scoresForDiff = [];
+    Object.assign(scoresForDiff, scores[currentFieldSettings.diffIndex]);
+    let i = 0;
+    while ((i < scoresForDiff.length) && (scoreObj.score > scoresForDiff[i].score)) {
+        ++i;
+    }
+    scoresForDiff.splice(i, 0, scoreObj);
+    scores[currentFieldSettings.diffIndex] = scoresForDiff;
+    storage.setItem("highscores", JSON.stringify(scores));
+}
+
+function getAllHighscores() {
+    scoresString = storage.getItem("highscores");
+    if (scoresString) {
+        return JSON.parse(scoresString);
+    }
+    return Array(fieldSettingsList.length).fill([]);
+}
+
+function clearHighscores() {
+    storage.removeItem("highscore");
 }

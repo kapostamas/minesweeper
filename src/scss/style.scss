@@ -37,6 +37,17 @@
         font-family: "Quicksand";
         text-align: center;
     }
+
+    input {
+        width: 120px;
+        border: none;
+
+        &::placeholder {
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+        }
+    }
+
     .display {
         background-color: white;
         width: 80px;
@@ -138,8 +149,31 @@
             content: "\f024";
         }
     }
-    &.game-over .flag:not(.mine)::after {
-        opacity: 1;
-        color: red;
+    &.game-over {
+        --amplitude: 15px;
+        animation-name: "shake1", "shake2";
+        animation-duration: 0.052s, 0.143s;
+        animation-iteration-count: 11, 6;
+
+        .flag:not(.mine)::after {
+            opacity: 1;
+            color: red;
+        }
     }
+}
+
+@keyframes shake1 {
+    0% {transform: translateX(0);}
+    25% {transform: translateX(var(--amplitude));}
+    50% {transform: translateX(0);}
+    75% {transform: translateX(calc(0 - var(--amplitude)));}
+    100% {transform: translateX(0);}
+}
+
+@keyframes shake2 {
+    0% {translate: 0 0;}
+    25% {translate: 0 calc(var(--amplitude) / 2);}
+    50% {translate: 0 0;}
+    75% {translate: 0 calc(0 - var(--amplitude) / 2);}
+    100% {translate: 0 0;}
 }
