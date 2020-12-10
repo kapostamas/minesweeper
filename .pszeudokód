@@ -32,7 +32,7 @@ felfedőFüggvény(x, y):
 		ha játékmező[vX][vY].aknaE()
 			aknákKörülöttem ++
 		ha aknákKörülöttem > 0
-			számKijelzése //tömbben, vizuálisan
+			számKijelzése() //tömbben, vizuálisan
 		egyébként
 			mindenre (vX, vY a vizsgálatban)
 				felfedőFüggvény(vX, vY)
