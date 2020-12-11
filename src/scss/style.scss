@@ -10,11 +10,13 @@
 
 body {
     background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .wrapper{
-    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,20 +36,24 @@ body {
     &>div {
         display: flex;
         gap: 10px;
-        .display, select, input, button {
+        .display, select, input {
             box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
         }
     }
-    #difficulty, #restart {
-        background-color: whitesmoke;
+    button, select {
         border: none;
         width: 120px;
         font-family: "Quicksand";
         text-align: center;
     }
-    #restart {
+    button {
+        background-color: whitesmoke;
         box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #bbb, 5px 5px 10px rgba(0,0,0,0.2);
+        border-radius: 5px;
+    }
+    select {
+        background-color: white;
     }
 
     label {
@@ -69,12 +75,17 @@ body {
         padding-left: 25px;
     }
 
+    .hidden {
+        display: none;
+    }
+
     .display {
         background-color: white;
         width: 80px;
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: default;
     }
     #timer::before {
         font-family: "Font Awesome 5 Free";
@@ -102,14 +113,18 @@ body {
     box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 
+    --cell-size: min(35px, (100vw - 120px) / var(--columns), (100vh - 175px) / var(--rows));
+    
+    grid-template-rows: repeat(var(--rows), var(--cell-size));
+    grid-template-columns: repeat(var(--columns), var(--cell-size));
 
     .cell{
         background-color: rgb(230, 230, 230);
         text-align: center;
         border: 1px solid #ccc;
-        padding: 5px 5px 5px;
+        padding: calc(var(--cell-size) / 7);
         text-align: center;
-        font-size: 20px;
+        font-size: calc(var(--cell-size) * 4 / 7);
         font-weight: 600;
         transition-property: background-color, box-shadow;
         transition-duration: 0.5s;
@@ -188,6 +203,27 @@ body {
     }
 }
 
+@media screen and (max-width: calc(var(--columns) * 35px + 50px)) {
+    #minefield {
+        grid-template-rows: repeat(var(--rows), 25px);
+        grid-template-columns: repeat(var(--columns), 25px);
+    }
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
 @keyframes shake1 {
     0% {transform: translateX(0);}
     25% {transform: translateX(var(--amplitude));}
@@ -202,4 +238,60 @@ body {
     50% {translate: 0 0;}
     75% {translate: 0 calc(0 - var(--amplitude) / 2);}
     100% {translate: 0 0;}
+}
+
+#modal-container {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(black, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.hidden {
+        display: none;
+    }
+
+    .modal-window {
+        background-color: white;
+        padding: 20px;
+        box-shadow: 10px 10px 15px rgba(black, 0.2);
+        &#highscores-window {
+            min-height: 400px;
+            h1 {
+                margin-bottom: 1em;
+            }
+            #scores-container {
+
+
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+        }
+
+        #close-button {
+            float: right;
+            background-color: #ddd;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            border-radius: 3px;
+            height: 30px;
+            width: 30px;
+            border: none;
+            &::after {
+                content: "×";
+                line-height: 1ex;
+                font-size: 36px;
+            }
+            &~* {
+                clear: both;
+            }
+        }
+
+        div, h1, p {
+            font-family: "Quicksand";
+        }
+    }
 }

@@ -1,17 +1,20 @@
 const fieldSettingsList = [
     {
+        name: "Könnyű",
         diffIndex: 0,
         height: 10,
         width: 10,
-        mines: 20
+        mines: 15
     },
     {
+        name: "Közepes",
         diffIndex: 1,
         height: 16,
         width: 16,
         mines: 40
     },
     {
+        name: "Nehéz",
         diffIndex: 2,
         height: 16,
         width: 30,
@@ -34,12 +37,79 @@ let storage;
 window.addEventListener('DOMContentLoaded', ()=> {
     storage = window.localStorage;
     init(fieldSettingsList[0]);
+
     document.getElementById("restart").addEventListener('click', () => {
         settingsIndex = document.getElementById('difficulty').value;
-        init(fieldSettingsList[settingsIndex > 0 ? settingsIndex : 0]); /// TODO
+        if (settingsIndex >= 0) {
+            init(fieldSettingsList[settingsIndex]);
+        }
+        else {
+            init(getCustomSettings());
+        }
     });
+    
+    document.getElementById("difficulty").onchange = (e) => {
+        let customSettingFields = document.querySelectorAll(".custom-setting");
+        if (e.target.value == -1) {
+            const properties = ["width", "height", "mines"];
+            customSettingFields.forEach((elem, index) => {
+                elem.classList.remove("hidden");
+                elem.lastElementChild.value = currentFieldSettings[properties[index]];
+            });
+            document.getElementById("show-highscores").classList.add("hidden");
+
+        }
+        else {
+            customSettingFields.forEach((elem) => {elem.classList.add("hidden");});
+            document.getElementById("show-highscores").classList.remove("hidden");
+            renderHighscores(e.target.value);
+        }
+    }
+    document.getElementById("width-input").onchange = updateMineInput;
+    document.getElementById("height-input").onchange = updateMineInput;
+    document.getElementById("mines-input").onchange = updateMineInput;
+    document.getElementById("width-input").onwheel = (e) => e.target.focus();
+    document.getElementById("height-input").onwheel = (e) => e.target.focus();
+    document.getElementById("mines-input").onwheel = (e) => e.target.focus();
+
+    document.getElementById("show-highscores").onclick = showHighscores;
 });
 
+function getCustomSettings() {
+    let settings = {};
+    settings.width = document.getElementById("width-input").value;
+    settings.height = document.getElementById("height-input").value;
+    settings.mines = document.getElementById("mines-input").value;
+    settings.diffIndex = null;
+    return settings;
+}
+
+function updateMineInput() {
+    let widthInput = document.getElementById("width-input");
+    let heightInput = document.getElementById("height-input");
+    let minesInput = document.getElementById("mines-input");
+
+    clamp(widthInput, 10);
+    clamp(heightInput, 10);
+
+    let maxMines = widthInput.value * heightInput.value - 10;
+    minesInput.max = maxMines;
+    clamp(minesInput, Math.max(Math.round(maxMines * 0.2), 1));
+}
+
+function clamp(inputNode, def) {
+    let val = parseInt(inputNode.value);
+    if (isNaN(val)) {
+        inputNode.value = def;
+        return;
+    }
+    if (val < inputNode.min) {
+        inputNode.value = inputNode.min;
+    }
+    if (val > inputNode.max) {
+        inputNode.value = inputNode.max;
+    }
+}
 
 function init(fieldSettings) {
     gameOver = false;
@@ -54,12 +124,11 @@ function init(fieldSettings) {
     generateMinefield();
 }
 
-function generateMinefield(){
-    const minefieldContainer=document.getElementById("minefield");
+function generateMinefield() {
+    const minefieldContainer = document.getElementById("minefield");
     minefieldContainer.classList.remove("game-over");
     clearMinefield();
-    minefieldContainer.style.gridTemplateRows=`repeat(${currentFieldSettings.height},35px)`
-    minefieldContainer.style.gridTemplateColumns=`repeat(${currentFieldSettings.width},35px)`    
+    minefieldContainer.style = `--rows: ${currentFieldSettings.height}; --columns: ${currentFieldSettings.width};`
     for (let i = 0; i < currentFieldSettings.height; i++) {
         minefield.push([])
         for (let j=0; j < currentFieldSettings.width; j++) {
@@ -124,7 +193,7 @@ function selectCell(cell) {
         checkNeighbors(cell);
     }
     else if (cell.state == "shown") {
-        nameTBD(cell);
+        checkShownNeighbors(cell);
     }
     checkWin();
 }
@@ -146,7 +215,6 @@ function stepOnMine(mineCell) {
     mineCell.node.classList.remove("hidden");
     stopTimer();
     gameOver = true;
-    console.log('You have lost...')
 }
 
 function checkWin() {
@@ -174,7 +242,7 @@ function getNeighbors(cell) {
     return neighbors;
 }
 
-function nameTBD(cell) {
+function checkShownNeighbors(cell) {
     let neighbors = getNeighbors(cell);
     let surroundingFlags = 0;
     for (neighbor of neighbors) {
@@ -251,6 +319,8 @@ function updateTimer() {
 }
 
 function saveHighscore(scoreObj) {
+    if (currentFieldSettings.diffIndex === null)
+        return;
     let scores = getAllHighscores();
     let scoresForDiff = [];
     Object.assign(scoresForDiff, scores[currentFieldSettings.diffIndex]);
@@ -259,8 +329,13 @@ function saveHighscore(scoreObj) {
         ++i;
     }
     scoresForDiff.splice(i, 0, scoreObj);
+    while (scoresForDiff.length > 10) {
+        scoresForDiff.pop();
+    }
     scores[currentFieldSettings.diffIndex] = scoresForDiff;
     storage.setItem("highscores", JSON.stringify(scores));
+
+    return i;
 }
 
 function getAllHighscores() {
@@ -274,3 +349,38 @@ function getAllHighscores() {
 function clearHighscores() {
     storage.removeItem("highscore");
 }
+
+function renderHighscores(diffIndex, position = null)
+{
+    document.getElementById("highscore-diff").innerText = fieldSettingsList[diffIndex].name;
+
+    const scoresContainer = document.getElementById("scoresContainer");
+    for (let child of scoresContainer.children) {
+        scoresContainer.removeChild(child);
+    }
+    scores = getAllHighscores()[diffIndex];
+    for (let i in scores) {
+        let score = scores[i];
+        let nameDiv = document.createElement("div");
+        let dateDiv = document.createElement("div");
+        let scoreDiv = document.createElement("div");
+        nameDiv.innerText = score.name;
+        let sDate = score.date.split(/-|T|Z|:/);
+        dateDiv.innerText = `${sDate[0]}. ${sDate[1]}. ${sDate[2]}. ${sDate[3]}:${sDate[4]}`;
+        scoreDiv.innerText = `${Math.floor(score.score / 60)}:${`${score.score % 60}`.padStart(2, '0')}`;
+
+        if (i == position) {
+            nameDiv.classList.add("new-score");
+            dateDiv.classList.add("new-score");
+            scoreDiv.classList.add("new-score");
+        }
+
+        scoresContainer.appendChild(nameDiv);
+        scoresContainer.appendChild(dateDiv);
+        scoresContainer.appendChild(scoreDiv);
+    }
+
+}
+function showHighscores() {
+            
+        }
