@@ -123,7 +123,8 @@ function init(fieldSettings) {
     timeCounter = 0;
     stopTimer();
     updateTimer();
-    renderHighscores(currentFieldSettings.diffIndex);
+    if (currentFieldSettings.diffIndex !== null)
+        renderHighscores(currentFieldSettings.diffIndex);
     generateMinefield();
 }
 
