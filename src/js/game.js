@@ -284,6 +284,8 @@ function checkNeighbors(cell) {
 }
 
 function toggleFlag(cell){
+    if (numberOfHiddenCells == allCells)
+        return;
     if (cell.state != "shown") {
         if (cell.state != "flagged" && numberOfFlags > 0) {
             --numberOfFlags;

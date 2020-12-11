@@ -9,7 +9,7 @@
 }
 
 body {
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+    background-image: linear-gradient(to top, #9fc4db 0%, #d9eaf3 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -51,6 +51,13 @@ body {
         background-color: whitesmoke;
         box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #bbb, 5px 5px 10px rgba(0,0,0,0.2);
         border-radius: 5px;
+        transition-duration: .2s;
+        &:hover {
+            box-shadow: inset 3px 3px 10px white, inset -1px -1px 5px #bbb, 5px 5px 10px rgba(0,0,0,0.2);
+        }
+        &:active {
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.2);
+        }
     }
     select {
         background-color: white;
@@ -211,20 +218,6 @@ body {
     }
 }
 
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
-  }
-
 @keyframes shake1 {
     0% {left: 0;}
     25% {left: var(--amplitude);}
@@ -296,6 +289,10 @@ body {
                                 margin-right: 10px;
                                 color: #ffd000;
                             }
+                            &.new-score::before {
+                                color: black;
+                                opacity: 0.6;
+                            }
                         }
                 .date {
                     padding-left: 40px;
@@ -310,13 +307,6 @@ body {
                     background-color: $highlight-color;
                     //outline: 3px solid $highlight-color;
                     box-shadow: 0px 0px 1px 3px $highlight-color;
-
-                    .header + div + &.score {
-                        &::before {
-                            color: black;
-                            opacity: 0.6;
-                        }
-                    }
                 }
             }
         }
@@ -330,10 +320,14 @@ body {
             width: 30px;
             border: none;
             border-radius: 100%;
+            transition-duration: 0.2s;
             &::after {
                 content: "×";
                 line-height: 1ex;
                 font-size: 36px;
+            }
+            &:hover {
+                box-shadow: 2px 2px 5px #aaa;
             }
         }
 
