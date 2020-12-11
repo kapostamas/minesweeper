@@ -73,6 +73,8 @@ window.addEventListener('DOMContentLoaded', ()=> {
     document.getElementById("mines-input").onwheel = (e) => e.target.focus();
 
     document.getElementById("show-highscores").onclick = showHighscores;
+
+    document.querySelectorAll(".close-button").forEach((button) => button.onclick = closeModal);
 });
 
 function getCustomSettings() {
@@ -121,6 +123,7 @@ function init(fieldSettings) {
     timeCounter = 0;
     stopTimer();
     updateTimer();
+    renderHighscores(currentFieldSettings.diffIndex);
     generateMinefield();
 }
 
@@ -204,7 +207,6 @@ function beginGame(cell) {
     startTimer();
 }
 
-
 function stepOnMine(mineCell) {
     const minefieldContainer = document.getElementById("minefield");
     minefieldContainer.classList.add("game-over");
@@ -225,7 +227,10 @@ function checkWin() {
         };
         stopTimer();
         gameOver = true;
-        saveHighscore({name: "unnamed", score: timeCounter, date: new Date().toISOString()});
+        
+        let position = saveHighscore({name: "unnamed", score: timeCounter, date: new Date().toISOString()});
+        renderHighscores(currentFieldSettings.diffIndex, position);
+        showHighscores();
     }    
 }
 
@@ -347,40 +352,57 @@ function getAllHighscores() {
 }
 
 function clearHighscores() {
-    storage.removeItem("highscore");
+    storage.removeItem("highscores");
 }
 
 function renderHighscores(diffIndex, position = null)
 {
     document.getElementById("highscore-diff").innerText = fieldSettingsList[diffIndex].name;
 
-    const scoresContainer = document.getElementById("scoresContainer");
-    for (let child of scoresContainer.children) {
+    const scoresContainer = document.getElementById("scores-container");
+    for (let child of scoresContainer.querySelectorAll("div:not(.header)")) {
         scoresContainer.removeChild(child);
     }
     scores = getAllHighscores()[diffIndex];
     for (let i in scores) {
         let score = scores[i];
-        let nameDiv = document.createElement("div");
+    //    let nameDiv = document.createElement("div");
         let dateDiv = document.createElement("div");
         let scoreDiv = document.createElement("div");
-        nameDiv.innerText = score.name;
+    //    nameDiv.innerText = score.name;
         let sDate = score.date.split(/-|T|Z|:/);
+        sDate[3] = `${parseInt(sDate[3]) + 1}`.padStart(2, '0');
         dateDiv.innerText = `${sDate[0]}. ${sDate[1]}. ${sDate[2]}. ${sDate[3]}:${sDate[4]}`;
         scoreDiv.innerText = `${Math.floor(score.score / 60)}:${`${score.score % 60}`.padStart(2, '0')}`;
 
+    //    nameDiv.classList.add("name");
+        dateDiv.classList.add("date");
+        scoreDiv.classList.add("score");
+
         if (i == position) {
-            nameDiv.classList.add("new-score");
+    //        nameDiv.classList.add("new-score");
             dateDiv.classList.add("new-score");
             scoreDiv.classList.add("new-score");
         }
 
-        scoresContainer.appendChild(nameDiv);
+    //    scoresContainer.appendChild(nameDiv);
         scoresContainer.appendChild(dateDiv);
         scoresContainer.appendChild(scoreDiv);
     }
 
 }
 function showHighscores() {
-            
-        }
+    showModal();
+    document.getElementById("highscores-window").classList.remove("hidden");
+}
+
+function showModal() {
+    document.getElementById("modal-container").classList.remove("hidden");
+}
+function hideModal() {
+    document.getElementById("modal-container").classList.add("hidden");
+}
+function closeModal(e) {
+    e.target.parentNode.classList.add("hidden");
+    hideModal();
+}

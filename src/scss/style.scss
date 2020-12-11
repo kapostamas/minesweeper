@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap');
 
 *{
     box-sizing: border-box;
@@ -104,6 +104,7 @@ body {
 }
 
 #minefield{
+    position: relative;
     width: auto;
     display: grid;
     border: 2px solid #fff;
@@ -192,9 +193,9 @@ body {
     }
     &.game-over {
         --amplitude: 15px;
-        animation-name: "shake1", "shake2";
-        animation-duration: 0.052s, 0.143s;
-        animation-iteration-count: 11, 6;
+        animation-name: shake1, shake2, shake3;
+        animation-duration: 52ms, 143ms, 75ms;
+        animation-iteration-count: 11, 6, 7;
 
         .flag:not(.mine)::after {
             opacity: 1;
@@ -225,19 +226,25 @@ body {
   }
 
 @keyframes shake1 {
-    0% {transform: translateX(0);}
-    25% {transform: translateX(var(--amplitude));}
-    50% {transform: translateX(0);}
-    75% {transform: translateX(calc(0 - var(--amplitude)));}
-    100% {transform: translateX(0);}
+    0% {left: 0;}
+    25% {left: var(--amplitude);}
+    50% {left: 0;}
+    75% {left: calc(0 - var(--amplitude));}
+    100% {left: 0;}
 }
 
 @keyframes shake2 {
-    0% {translate: 0 0;}
-    25% {translate: 0 calc(var(--amplitude) / 2);}
-    50% {translate: 0 0;}
-    75% {translate: 0 calc(0 - var(--amplitude) / 2);}
-    100% {translate: 0 0;}
+    0% {top: 0;}
+    25% {top: calc(var(--amplitude) / 2);}
+    50% {top: 0;}
+    75% {top: calc(0 - var(--amplitude) / 2);}
+    100% {top: 0;}
+}
+
+@keyframes shake3 {
+    0%, 50%, 100% {transform: rotate(0);}
+    25% {transform: rotate(0.75deg);}
+    75% {transform: rotate(-0.75deg);}
 }
 
 #modal-container {
@@ -251,47 +258,95 @@ body {
     align-items: center;
     justify-content: center;
 
-    &.hidden {
+    &.hidden, .hidden {
         display: none;
     }
 
     .modal-window {
-        background-color: white;
-        padding: 20px;
+        background-color: whitesmoke;
+        padding: 40px;
         box-shadow: 10px 10px 15px rgba(black, 0.2);
+        border-radius: 5px;
+        position: relative;
         &#highscores-window {
             min-height: 400px;
+            width: 400px;
+            
             h1 {
                 margin-bottom: 1em;
             }
             #scores-container {
-
-
                 display: grid;
-                grid-template-columns: 2fr 1fr 1fr;
+                grid-template-columns: 2fr 1fr; //1fr;
+                gap: 5px;
+                div {
+                    font-variant-numeric: tabular-nums;
+                }
+                .header {
+                    margin-bottom: 5px;
+                    border-bottom: solid 1px #ddd;
+                    font-weight: 700;
+                    text-align: center;
+                }
+                        .header + div + .score {
+                            &::before {
+                                font-family: "Font Awesome 5 Free";
+                                font-weight: 900;
+                                content: "\f091";
+                                margin-right: 10px;
+                                color: #ffd000;
+                            }
+                        }
+                .date {
+                    padding-left: 40px;
+                }
+                .score {
+                    text-align: right;
+                    padding-right: 40px;
+                }
+                .new-score {
+                    $highlight-color: #ffd0005e;
+
+                    background-color: $highlight-color;
+                    //outline: 3px solid $highlight-color;
+                    box-shadow: 0px 0px 1px 3px $highlight-color;
+
+                    .header + div + &.score {
+                        &::before {
+                            color: black;
+                            opacity: 0.6;
+                        }
+                    }
+                }
             }
         }
 
-        #close-button {
-            float: right;
-            background-color: #ddd;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            border-radius: 3px;
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: white;
             height: 30px;
             width: 30px;
             border: none;
+            border-radius: 100%;
             &::after {
                 content: "×";
                 line-height: 1ex;
                 font-size: 36px;
             }
-            &~* {
-                clear: both;
-            }
         }
 
         div, h1, p {
             font-family: "Quicksand";
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 20px;
+            span {
+                font-size: inherit;
+            }
         }
     }
 }

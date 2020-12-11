@@ -42,11 +42,21 @@
         <div id="minefield"></div>
     </div>
     <div id="modal-container" class="hidden">
-        <div id="highscores-window" class="modal-window">
-            <button id="close-button" onclick="closeModal"></button>
-            <h1>Legjobb eredmények <span id="highscore-diff">Könnyű</span> fokozaton</h1>
+        <div id="victory-window" class="modal-window hidden">
+            <button class="close-button"></button>
+            <h1>Győztél!</h1>
+            <p>Megtaláltad az összes aknát a mezőn!</p>
+        </div>
+        <div id="defeat-window" class="modal-window hidden">
+            <button class="close-button"></button>
+            <h1>Vesztettél!</h1>
+            <p>Ráléptél egy aknára. :(</p>
+        </div>
+        <div id="highscores-window" class="modal-window hidden">
+            <button class="close-button"></button>
+            <h1>Legjobb eredmények<br/>a <span id="highscore-diff">Könnyű</span> fokozaton</h1>
             <div id="scores-container">
-                <div class="header">Név</div>
+                <!--<div class="header">Név</div>-->
                 <div class="header">Dátum</div>
                 <div class="header">Eredmény</div>
             </div>
