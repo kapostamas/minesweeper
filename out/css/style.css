@@ -1,0 +1,351 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap");
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+body {
+  background-image: linear-gradient(to top, #9fc4db 0%, #d9eaf3 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#controls {
+  padding: 10px;
+  margin-bottom: 40px;
+  display: flex;
+  width: 750px;
+  height: 60px;
+  justify-content: space-between;
+  font-family: "Quicksand";
+}
+#controls > div {
+  display: flex;
+  gap: 10px;
+}
+#controls > div .display, #controls > div select, #controls > div input {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+#controls button, #controls select {
+  border: none;
+  width: 120px;
+  font-family: "Quicksand";
+  text-align: center;
+}
+#controls button {
+  background-color: whitesmoke;
+  box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #bbb, 5px 5px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  transition-duration: 0.2s;
+}
+#controls button:hover {
+  box-shadow: inset 3px 3px 10px white, inset -1px -1px 5px #bbb, 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+#controls button:active {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+}
+#controls select {
+  background-color: white;
+}
+#controls label {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  opacity: 0.5;
+  margin-left: 10px;
+  margin-top: 12px;
+}
+#controls input {
+  font-family: "Quicksand";
+  width: 80px;
+  border: none;
+  height: 100%;
+  text-align: center;
+  padding: 3px;
+  padding-left: 25px;
+}
+#controls .hidden {
+  display: none;
+}
+#controls .display {
+  background-color: white;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+#controls #timer::before {
+  font-family: "Font Awesome 5 Free";
+  content: "";
+  font-weight: 900;
+  margin-right: 10px;
+  opacity: 0.5;
+}
+#controls #counter::before {
+  font-family: "Font Awesome 5 Free";
+  content: "";
+  font-weight: 900;
+  margin-right: 10px;
+  opacity: 0.5;
+}
+
+#minefield {
+  position: relative;
+  width: auto;
+  display: grid;
+  border: 2px solid #fff;
+  font-family: "Quicksand";
+  padding: 20px;
+  background-color: #e6e6e6;
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  --cell-size: min(35px, (100vw - 120px) / var(--columns), (100vh - 175px) / var(--rows));
+  grid-template-rows: repeat(var(--rows), var(--cell-size));
+  grid-template-columns: repeat(var(--columns), var(--cell-size));
+}
+#minefield .cell {
+  background-color: #e6e6e6;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: calc(var(--cell-size) / 7);
+  text-align: center;
+  font-size: calc(var(--cell-size) * 4 / 7);
+  font-weight: 600;
+  transition-property: background-color, box-shadow;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
+  cursor: pointer;
+}
+#minefield .cell[mines="1"]::after {
+  color: #00a2ff;
+  content: "1";
+}
+#minefield .cell[mines="2"]::after {
+  color: #0a8506;
+  content: "2";
+}
+#minefield .cell[mines="3"]::after {
+  color: #df0000;
+  content: "3";
+}
+#minefield .cell[mines="4"]::after {
+  color: #043a9e;
+  content: "4";
+}
+#minefield .cell[mines="5"]::after {
+  color: #e64900;
+  content: "5";
+}
+#minefield .cell[mines="6"]::after {
+  color: #0066a1;
+  content: "6";
+}
+#minefield .cell[mines="7"]::after {
+  color: #747474;
+  content: "7";
+}
+#minefield .cell[mines="8"]::after {
+  color: #000000;
+  content: "8";
+}
+#minefield .mine {
+  background-color: #f84361;
+}
+#minefield .mine::after {
+  font-family: "Font Awesome 5 Free";
+  color: #000;
+  font-weight: 900;
+  content: "";
+}
+#minefield .hidden {
+  background-color: whitesmoke;
+  box-shadow: inset 5px 5px 10px white, inset -3px -3px 5px #bbb;
+}
+#minefield .hidden:hover {
+  transition-duration: 0.2s;
+  box-shadow: inset 3px 3px 10px white, inset -1px -1px 5px #bbb;
+}
+#minefield .flag::after {
+  font-family: "Font Awesome 5 Free";
+  color: black;
+  opacity: 0.5;
+  font-weight: 900;
+  content: "";
+}
+#minefield.game-over {
+  --amplitude: 15px;
+  animation-name: shake1, shake2, shake3;
+  animation-duration: 52ms, 143ms, 75ms;
+  animation-iteration-count: 11, 6, 7;
+}
+#minefield.game-over .flag:not(.mine)::after {
+  opacity: 1;
+  color: red;
+}
+
+@media screen and (max-width: calc(var(--columns) * 35px + 50px)) {
+  #minefield {
+    grid-template-rows: repeat(var(--rows), 25px);
+    grid-template-columns: repeat(var(--columns), 25px);
+  }
+}
+@keyframes shake1 {
+  0% {
+    left: 0;
+  }
+  25% {
+    left: var(--amplitude);
+  }
+  50% {
+    left: 0;
+  }
+  75% {
+    left: calc(0 - var(--amplitude));
+  }
+  100% {
+    left: 0;
+  }
+}
+@keyframes shake2 {
+  0% {
+    top: 0;
+  }
+  25% {
+    top: calc(var(--amplitude) / 2);
+  }
+  50% {
+    top: 0;
+  }
+  75% {
+    top: calc(0 - var(--amplitude) / 2);
+  }
+  100% {
+    top: 0;
+  }
+}
+@keyframes shake3 {
+  0%, 50%, 100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(0.75deg);
+  }
+  75% {
+    transform: rotate(-0.75deg);
+  }
+}
+#modal-container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#modal-container.hidden, #modal-container .hidden {
+  display: none;
+}
+#modal-container .modal-window {
+  background-color: whitesmoke;
+  padding: 40px;
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  position: relative;
+}
+#modal-container .modal-window .close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: white;
+  height: 30px;
+  width: 30px;
+  border: none;
+  border-radius: 100%;
+  transition-duration: 0.2s;
+}
+#modal-container .modal-window .close-button::after {
+  content: "×";
+  line-height: 1ex;
+  font-size: 36px;
+}
+#modal-container .modal-window .close-button:hover {
+  box-shadow: 2px 2px 5px #aaa;
+}
+#modal-container .modal-window div, #modal-container .modal-window h1, #modal-container .modal-window p {
+  font-family: "Quicksand";
+}
+#modal-container .modal-window h1 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+#modal-container .modal-window h1 span {
+  font-size: inherit;
+}
+#modal-container .modal-window#highscores-window {
+  min-height: 400px;
+  width: 400px;
+}
+#modal-container .modal-window#highscores-window h1 {
+  margin-bottom: 1em;
+}
+#modal-container .modal-window#highscores-window #scores-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 5px;
+}
+#modal-container .modal-window#highscores-window #scores-container div {
+  font-variant-numeric: tabular-nums;
+}
+#modal-container .modal-window#highscores-window #scores-container .header {
+  margin-bottom: 5px;
+  border-bottom: solid 1px #ddd;
+  font-weight: 700;
+  text-align: center;
+}
+#modal-container .modal-window#highscores-window #scores-container .header + div + .score::before {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  content: "";
+  margin-right: 10px;
+  color: #ffd000;
+}
+#modal-container .modal-window#highscores-window #scores-container .header + div + .score.new-score::before {
+  color: black;
+  opacity: 0.6;
+}
+#modal-container .modal-window#highscores-window #scores-container .date {
+  padding-left: 40px;
+}
+#modal-container .modal-window#highscores-window #scores-container .score {
+  text-align: right;
+  padding-right: 40px;
+}
+#modal-container .modal-window#highscores-window #scores-container .new-score {
+  background-color: #ffd0005e;
+  box-shadow: 0px 0px 1px 3px #ffd0005e;
+}
+#modal-container .modal-window#victory-window h1 {
+  font-size: 24px;
+}
+
+/*# sourceMappingURL=style.css.map */
