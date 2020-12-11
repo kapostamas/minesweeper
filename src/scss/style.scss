@@ -261,6 +261,40 @@ body {
         box-shadow: 10px 10px 15px rgba(black, 0.2);
         border-radius: 5px;
         position: relative;
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: white;
+            height: 30px;
+            width: 30px;
+            border: none;
+            border-radius: 100%;
+            transition-duration: 0.2s;
+            &::after {
+                content: "×";
+                line-height: 1ex;
+                font-size: 36px;
+            }
+            &:hover {
+                box-shadow: 2px 2px 5px #aaa;
+            }
+        }
+
+        div, h1, p {
+            font-family: "Quicksand";
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 10px;
+            span {
+                font-size: inherit;
+            }
+        }
+
         &#highscores-window {
             min-height: 400px;
             width: 400px;
@@ -311,36 +345,11 @@ body {
             }
         }
 
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: white;
-            height: 30px;
-            width: 30px;
-            border: none;
-            border-radius: 100%;
-            transition-duration: 0.2s;
-            &::after {
-                content: "×";
-                line-height: 1ex;
-                font-size: 36px;
-            }
-            &:hover {
-                box-shadow: 2px 2px 5px #aaa;
+        &#victory-window {
+            h1 {
+                font-size: 24px;
             }
         }
 
-        div, h1, p {
-            font-family: "Quicksand";
-        }
-        h1 {
-            text-align: center;
-            font-weight: 700;
-            font-size: 20px;
-            span {
-                font-size: inherit;
-            }
-        }
     }
 }
