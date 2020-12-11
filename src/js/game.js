@@ -229,9 +229,14 @@ function checkWin() {
         stopTimer();
         gameOver = true;
         
-        let position = saveHighscore({name: "unnamed", score: timeCounter, date: new Date().toISOString()});
-        renderHighscores(currentFieldSettings.diffIndex, position);
-        showHighscores();
+        if (currentFieldSettings.diffIndex !== null) {
+            let position = saveHighscore({name: "unnamed", score: timeCounter, date: new Date().toISOString()});
+            renderHighscores(currentFieldSettings.diffIndex, position);
+            showHighscores();
+        }
+        else {
+            showVictoryScreen();
+        }
     }    
 }
 
@@ -397,6 +402,10 @@ function renderHighscores(diffIndex, position = null)
 function showHighscores() {
     showModal();
     document.getElementById("highscores-window").classList.remove("hidden");
+}
+function showVictoryScreen() {
+    showModal();
+    document.getElementById("victory-window").classList.remove("hidden");
 }
 
 function showModal() {
